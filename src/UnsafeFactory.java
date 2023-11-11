@@ -12,3 +12,4 @@ public interface UnsafeFactory {
     // the specific implementation of 'UnsafeFactory'.
     UnsafeOperation create(Scanner sc);
 }
+

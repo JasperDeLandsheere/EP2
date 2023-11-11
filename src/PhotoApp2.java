@@ -5,21 +5,36 @@ public class PhotoApp2 {
 
     public static void main(String[] args) {
 
+        // TODO: implement method according to 'Aufgabenblatt2.md'.
+
         SimpleSparseRasterRGB r1 = new SimpleSparseRasterRGB(40, 60);
+
+        // draw 3 lines
+        r1.drawLine(0, 1, 35, 9, new Color(20, 25, 250));
+        r1.drawLine(30, 5, 0, 30, Color.ORANGE);
+        r1.drawLine(2, 0, 7, 40, Color.GREEN);
+
+        // fill the region
+        r1.floodFill(7, 7, Color.CYAN);
+
+        // draw the raster
         draw(r1);
 
-        SimplePointQueue q = new SimplePointQueue(3);
-        q.add(new Point(0, 0));
-        q.add(new Point(10, 10));
-        q.add(new Point(20, 10));
+        // apply the filter
+        SimpleSparseRasterRGB r2 = r1.convolve(new double[][]{
+                {0.077847, 0.123317, 0.077847},
+                {0.123317, 0.195346, 0.123317},
+                {0.077847, 0.123317, 0.077847}
+        });
 
-        q.add(new Point(20, 20));
-        q.add(new Point(30, 30));
+        // draw the raster
+        draw(r2);
 
-        r1.drawLines(q, Color.BLUE);
-        draw(r1);
+        // fill the region with black
+        r2.floodFill(7, 7, Color.BLACK);
 
-
+        // draw the raster
+        draw(r2);
 
     }
 

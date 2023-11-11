@@ -32,10 +32,6 @@ public interface RasterizedRGB {
     // && height <= this.getHeight().
     void crop(int width, int height);
 
-    void floodFill(Point p, Color color);
-
-    void drawLine(Point p1, Point p2, Color color);
-
     // Copies the content of this 'this' into 'copy'. More specifically, the method copies the
     // feasible region which is bounded by the rectangular region with the upper left corner [0,0]
     // and the lower left corner [min(copy.getWidth(), this.getWidth())-1, min(copy.getHeight(),
@@ -49,7 +45,6 @@ public interface RasterizedRGB {
         }
     }
 
-    void brighten(int N);
-
     RasterizedRGB newLayer();
+
 }

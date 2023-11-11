@@ -63,9 +63,6 @@ public class Aufgabe3Test {
         pcm.put(p5, Color.CYAN);
         pcm.put(p1, Color.RED);
 
-        int n = pcm.numberOfLeafNodes();
-        System.out.println(n);
-
         testEquals(pcm.get(p4),Color.WHITE);
         testEquals(pcm.get(p2),Color.YELLOW);
         testEquals(pcm.get(p5),Color.CYAN);
@@ -93,7 +90,6 @@ public class Aufgabe3Test {
         pcm = raster.asMap();
         testEquals(pcm.get(p5),Color.CYAN);
         testEquals(pcm.get(new Point(3,3)),Color.BLACK);
-
 
     }
 

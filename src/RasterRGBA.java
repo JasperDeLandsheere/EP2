@@ -139,27 +139,6 @@ public class RasterRGBA implements RasterizedRGB {
         this.height = height;
     }
 
-    @Override
-    public void floodFill(Point p, Color color) {
-
-    }
-
-    @Override
-    public void drawLine(Point p1, Point p2, Color color) {
-
-    }
-
-    @Override
-    public void brighten(int N) {
-
-    }
-
-    @Override
-    public RasterizedRGB newLayer() {
-        return null;
-    }
-
-
     // Returns the result of the alpha compositing of the 'this' (used as foreground)
     // over the specified background raster.
     // Precondition: background != null.
@@ -216,7 +195,13 @@ public class RasterRGBA implements RasterizedRGB {
         }
         return result;
     }
+    //TODO (optional): Add more operations (e.g., floodfill).
 
+
+    @Override
+    public RasterizedRGB newLayer() {
+        return null;
+    }
 }
 
 // A data buffer for a large number of elements (as in the case of large images),
@@ -258,4 +243,6 @@ class DataBufferInt {
 
         return this.data[0].length;
     }
+
+
 }

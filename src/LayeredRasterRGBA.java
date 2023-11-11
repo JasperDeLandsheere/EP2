@@ -9,26 +9,33 @@ import java.awt.*;
 // All layers have the same size.
 public class LayeredRasterRGBA implements RasterizedRGBIterable {
 
+    //TODO: declare variables.
+    private LinkedListRasterRGBA layers;
+    private int activeLayerIndex;
+    private int width;
+    private int height;
+
     // Initialises this layered raster with one layer (lowermost background layer) of the specified
     // size with all pixels being fully opaque, i.e. (R,G,B, alpha) = (0, 0, 0, 255).
     // Preconditions: height > 0, width > 0.
-
-    private final LinkedListRasterRGBA layers;
-    private int activeLayer;
-
-
     public LayeredRasterRGBA(int width, int height) {
 
+        // TODO: implement constructor.
+        this.width = width;
+        this.height = height;
         layers = new LinkedListRasterRGBA();
-        layers.addFirst(new RasterRGBA(width, height));
-        activeLayer = 0;
 
-        // Set all pixels to fully opaque.
+        RasterRGBA bottomLayer = new RasterRGBA(width, height);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                this.setPixelColor(x, y, new Color(0, 0, 0, 255));
+                bottomLayer.setPixelColor(x, y, new Color(0, 0, 0, 255));
             }
         }
+
+        layers.addFirst(bottomLayer);
+
+        activeLayerIndex = 0;
+
     }
 
     // Adds a new layer with size this.getWidth() times this.getHeight() and
@@ -36,9 +43,19 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // of this raster and sets it active.
     public void newLayer() {
 
-        layers.addLast(new RasterRGBA(this.getWidth(), this.getHeight()));
-        activeLayer = layers.size() - 1;
+        // TODO: implement method.
+        RasterRGBA newLayer = new RasterRGBA(this.getWidth(), this.getHeight());
 
+        for (int x = 0; x < this.getWidth(); x++) {
+            for (int y = 0; y < this.getHeight(); y++) {
+                newLayer.setPixelColor(x, y, new Color(0, 0, 0, 0));
+            }
+        }
+
+        // top layer
+        layers.addLast(newLayer);
+
+        activeLayerIndex = layers.size() - 1;
     }
 
     // Sets the layer with the specified index as active layer for future operations. All other
@@ -46,7 +63,8 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // Precondition: i >= 0 && i < this.numberOfLayers().
     public void setActiveLayer(int i) {
 
-        activeLayer = i;
+        // TODO: implement method.
+        activeLayerIndex = i;
     }
 
     // Removes the layer with the specified index. If the removed layer was the active layer, the
@@ -55,16 +73,25 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // Precondition: i > 0 && i < numberOfLayers().
     public void removeLayer(int i) {
 
-        layers.remove(i);
-        if (i == activeLayer) {
-            activeLayer = layers.size() - 1;
+        // TODO: implement method.
+        if (i == 0) {
+            return;
+        }
+        else {
+            layers.remove(i);
+
+            // Update the active layer index if the removed layer was the active layer.
+            if (activeLayerIndex == i) {
+                activeLayerIndex = this.numberOfLayers() - 1;
+            }
         }
     }
 
     // Returns the number of layers of this raster (including layer 0).
     public int numberOfLayers() {
 
-        return layers.size();
+        // TODO: implement method.
+        return this.layers.size();
     }
 
     // Returns the color of the pixel at the specified (x, y) position in this layered raster, using
@@ -77,20 +104,26 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // Precondition: (x, y) is a valid coordinate of the raster.
     public Color getPixelColor(int x, int y) {
 
-        Color back = layers.get(0).getPixelColor(x, y);
-        for (int i = 1; i < layers.size(); i++) {
-            Color fore = layers.get(i).getPixelColor(x, y);
-            back = RasterRGBA.over(fore, back);
+        // TODO: implement method.
+        int numLayers = layers.size();
+        // RasterRGBA bottomLayer = layers.get(0);
+        RasterRGBA current = this.layers.getFirst();
+        Color color = current.getPixelColor(x, y);
+        for (int i = 1; i < numLayers; i++) {
+            //RasterRGBA layer = layers.get(i);
+            Color color_i = this.layers.get(i).getPixelColor(x, y);
+            //bottomLayer = layer.over(bottomLayer);
+            color = RasterRGBA.over(color_i, color);
         }
-
-        return back;
+        return color;
     }
 
     // Sets the color of the specified pixel in the active layer.
     // Precondition: (x,y) is a valid coordinate of the raster, color != null.
     public void setPixelColor(int x, int y, Color color) {
 
-        layers.get(activeLayer).setPixelColor(x, y, color);
+        // TODO: implement method.
+        layers.get(activeLayerIndex).setPixelColor(x, y, color);
     }
 
     // Filters the active layer by performing a convolution with the specified filter kernel.
@@ -102,19 +135,22 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // filterKernel.length < this.getHeight().
     public void convolve(double[][] filterKernel) {
 
-        layers.get(activeLayer).convolve(filterKernel);
+        // TODO: implement method.#
+        layers.get(activeLayerIndex).convolve(filterKernel);
     }
 
     // Returns the width of this raster.
     public int getWidth() {
 
-        return layers.get(0).getWidth();
+        // TODO: implement method.
+        return this.width;
     }
 
     // Returns the height of this raster.
     public int getHeight() {
 
-        return layers.get(0).getHeight();
+        // TODO: implement method.
+        return this.height;
     }
 
     // Returns the result of compositing of all layers.
@@ -125,13 +161,16 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // image, which is returned by the method. The method does not change 'this'.
     public RasterRGBA asRasterRGBA() {
 
-        RasterRGBA back = layers.get(0);
-        for (int i = 1; i < layers.size(); i++) {
-            RasterRGBA fore = layers.get(i);
-            back = fore.over(back);
+        // TODO: implement method.
+        int numLayers = layers.size();
+        RasterRGBA bottomLayer = layers.get(0);
+        RasterRGBA result = new RasterRGBA(this.width, this.height);
+        for (int i = 1; i < numLayers; i++) {
+            RasterRGBA layer = layers.get(i);
+            result = layer.over(bottomLayer);
+            bottomLayer = layers.get(i-1);
         }
-
-        return back;
+        return result;
     }
 
     // Crops all layers of 'this' to the rectangular region with upper left coordinates (0,0)
@@ -139,6 +178,7 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // Precondition: width <= this.getWidth() && height <= this.getHeight().
     public void crop(int width, int height) {
 
+        // TODO: implement method.#
         for (int i = 0; i < layers.size(); i++) {
             layers.get(i).crop(width, height);
         }
@@ -150,17 +190,19 @@ public class LayeredRasterRGBA implements RasterizedRGBIterable {
     // Preconditions: (x1,y1) and (x2,y2) are valid coordinates of the raster, color != null.
     public void drawLine(int x1, int y1, int x2, int y2, Color color) {
 
-        layers.get(activeLayer).drawLine(x1, y1, x2, y2, color);
-
+        // TODO: implement method.
+        layers.get(activeLayerIndex).drawLine(x1, y1, x2, y2, color);
+        //layers.set(activeLayerIndex, activeLayer);
     }
 
+    //TODO (optional): add more operations (e.g., floodfill).
     public LinkedListRasterRGBA getLayers() {
         return layers;
     }
 
     @Override
     public RasterizedRGBIterator iterator() {
-        return new LRIt(this);
+
+        return new layeredRasterIterator(this);
     }
 }
-

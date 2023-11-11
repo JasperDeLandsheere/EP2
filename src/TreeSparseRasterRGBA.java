@@ -31,6 +31,29 @@ public class TreeSparseRasterRGBA implements SingleLayer // TODO: activate claus
         map = new TreeMap<Point, Color>();
     }
 
+    //TODO: define missing parts of this class.
+    public HorizontalLineView getTopLineView() {
+        for (int i = 0; i <= height; i++){
+        }
+    }
+
+    // Returns a new 'Layered' object with an additional top-most layer (above the
+    // top-most layer of 'this') of size this.getWidth() times this.getHeight() and all
+    // pixels set to color (0, 0, 0, 0). All layers (except the
+    // new top-most layer) of the returned object are identical to the layers of 'this'.
+    @Override
+    public Layered newLayer() {
+        TreeSparseRasterRGBA newLayer = new TreeSparseRasterRGBA(this.width, this.height);
+        Layered newMulti = new MultiLayerRasterRGBA(newLayer, this);
+        return newMulti;
+
+    }
+
+    @Override
+    public SingleLayer getForeground() {
+        return this;
+    }
+
     // Returns the color of the specified pixel.
     // Preconditions: (x,y) is a valid coordinate of the raster
     public Color getPixelColor(int x, int y) {
@@ -125,71 +148,16 @@ public class TreeSparseRasterRGBA implements SingleLayer // TODO: activate claus
 
         this.width = width;
         this.height = height;
-    }
-
-    @Override
-    public void floodFill(Point p, Color color) {
-        SimplePointQueue q = new SimplePointQueue(1000);
-
-        Color originalColor = this.getPixelColor(p.getX(), p.getY());
-        q.add(p);
-
-        while (q.size() > 0) {
-            Point current = q.poll();
-            if (current.getX() < 0 || current.getX() >= this.getWidth()
-                    || current.getY() < 0 || current.getY() >= this.getHeight()) {
-                continue;
-            }
-            if (this.getPixelColor(current.getX(), current.getY()).equals(originalColor)) {
-                this.setPixelColor(current.getX(), current.getY(), color);
-                q.add(new Point(current.getX() + 1, current.getY()));
-                q.add(new Point(current.getX() - 1, current.getY()));
-                q.add(new Point(current.getX(), current.getY() + 1));
-                q.add(new Point(current.getX(), current.getY() - 1));
+        Set<Point> keys = map.keySet();
+        Set<Point> toRemove = new HashSet<Point>();
+        for (Point p: keys) {
+            if (p.getX() >= width || p.getY() >= height) {
+                toRemove.add(p);
             }
         }
-    }
-
-    @Override
-    public void drawLine(Point p1, Point p2, Color color) {
-        int x1 = p1.getX();
-        int y1 = p1.getY();
-        int x2 = p2.getX();
-        int y2 = p2.getY();
-
-        int dx = Math.abs(x2 - x1);
-        int dy = Math.abs(y2 - y1);
-        int sx = x1 < x2 ? 1 : -1;
-        int sy = y1 < y2 ? 1 : -1;
-        int err = dx - dy;
-
-        while (x1 != x2 || y1 != y2) {
-            this.setPixelColor(x1, y1, color);
-
-            int err2 = 2 * err;
-            if (err2 > -dy) {
-                err -= dy;
-                x1 += sx;
-            }
-            if (err2 < dx) {
-                err += dx;
-                y1 += sy;
-            }
+        for (Point p: toRemove) {
+            map.remove(p);
         }
-
-        this.setPixelColor(x1, y1, color);
-
-    }
-
-    @Override
-    public void brighten(int N) {
-
-    }
-
-    @Override
-    public MultiLayerRasterRGBA newLayer() {
-        SingleLayer foreground = new TreeSparseRasterRGBA(this.width, this.height);
-        return new MultiLayerRasterRGBA(foreground, this);
     }
 
     @Override
@@ -198,13 +166,8 @@ public class TreeSparseRasterRGBA implements SingleLayer // TODO: activate claus
     }
 
     @Override
-    public SingleLayer getForeground() {
-        return this;
-    }
-
-    @Override
     public Layered getBackground() {
-        return this;
+        return null;
     }
 
     @Override

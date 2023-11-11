@@ -1,5 +1,5 @@
 // A class for representing points with integer coordinates in 2D.
-public class Point implements Comparable<Point>{
+public class Point implements Comparable<Point> {
     private final int x, y;
 
     // Initializes this point with its coordinates.
@@ -25,10 +25,17 @@ public class Point implements Comparable<Point>{
     // relation) on objects of 'Point'. Returns 0 if and only if the two coordinates of 'this'
     // and 'p' are equal. Returns -1 if 'this' is less than 'p' or 1 otherwise.
     // Precondition: p != null
-    @Override
     public int compareTo(Point p) {
 
-        return (this.x < p.x) ? -1 : ((this.x > p.x) ? 1 : Integer.compare(this.y, p.y));
+        // TODO: implement method.
+
+        if (this.x == p.x && this.y == p.y) {
+            return 0;
+        } else if (this.x < p.x || (this.x == p.x && this.y < p.y)) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 
     @Override
@@ -37,16 +44,21 @@ public class Point implements Comparable<Point>{
     // p1.compareTo(p2) == 0.)
     // Return 'false' otherwise.
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        return this.compareTo((Point) o) == 0;
+
+        //TODO: implement method.
+        if (o instanceof Point) {
+            return this.compareTo((Point) o) == 0;
+        } else {
+        return false;
+        }
     }
 
     @Override
     // Returns the hash code of 'this'.
     public int hashCode() {
 
-        return x^3 + y^3;
+        //TODO: implement method.
+        return ((Integer)x).hashCode() * ((Integer)y).hashCode();
     }
 
     @Override

@@ -5,19 +5,20 @@ import java.util.Scanner;
 //
 public class UnsafeFillFactory implements UnsafeFactory {
 
-    private Color[] c;
+    // TODO: define missing parts of this class.
+    private Color[] color;
 
+    // TODO: add constructor specification.
     public UnsafeFillFactory(Color[] c) {
 
-        this.c = c;
+        // TODO: implement constructor.
+        this.color = c;
     }
 
-    @Override
-    public UnsafeOperation create(Scanner sc) {
+    // TODO: add method specification.
+    public UnsafeFillOperation create(Scanner sc) {
 
-        int x = sc.nextInt();
-        int y = sc.nextInt();
-
-        return new UnsafeFillOperation(new Point(x, y), c);
+        // TODO: implement method.
+        return new UnsafeFillOperation(sc.nextInt(), sc.nextInt(), color[0]);
     }
 }

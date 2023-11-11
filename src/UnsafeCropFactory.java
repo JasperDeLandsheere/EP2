@@ -4,13 +4,16 @@ import java.util.Scanner;
 //
 public class UnsafeCropFactory implements UnsafeFactory {
 
+    //TODO: declare variables (if needed).
+    private int width;
+    private int height;
+
     @Override
     // Returns a new 'UnsafeCropOperation' object. The 'width' and 'height' parameters of the
     // returned object are provided by the scanner object 'sc'.
     public UnsafeOperation create(Scanner sc) {
-        int width = sc.nextInt();
-        int height = sc.nextInt();
 
-        return new UnsafeCropOperation(width, height);
+        // TODO: implement method.
+        return new UnsafeCropOperation(sc.nextInt(), sc.nextInt());
     }
 }

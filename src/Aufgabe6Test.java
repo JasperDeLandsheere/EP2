@@ -5,6 +5,8 @@ public class Aufgabe6Test {
 
     public static void main(String[] args) {
 
+        // TODO: uncomment this block:
+
         System.out.println("Test 'TreeSparseRasterRGBA':");
         Layered r1 = new TreeSparseRasterRGBA(20,30);
         r1.setPixelColor(5,5, Color.ORANGE);
@@ -64,7 +66,6 @@ public class Aufgabe6Test {
                 {0.123317, 0.195346, 0.123317},
                 {0.077847, 0.123317, 0.077847}
         });
-
         r2.newLayer();
         r2.setPixelColor(4,4, new Color(255,255,255,100));
         iterator = r2.iterator();
@@ -81,7 +82,6 @@ public class Aufgabe6Test {
         testEquals(r.getPixelColor(4, 4),  new Color(0,0,0, 255));
         testEquals(r.getPixelColor(5, 5),  new Color(255,200,0, 255));
         testEquals(iterator.hasNext(), false);
-
 
         System.out.println("Test 'newlayer':");
         r1 = (Layered) new UnsafeNewLayerFactory().create(new Scanner("")).execute(r1);

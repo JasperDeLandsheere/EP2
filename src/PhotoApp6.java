@@ -9,11 +9,15 @@ public class PhotoApp6 {
     public static void main(String[] args) {
 
         // TODO: modify according to 'Aufgabenblatt6.md'.
+        int cellSize = 10;
 
         // TODO: declare and initialize 'Layered' variable.
         Layered raster = new MultiLayerRasterRGBA(
                 new TreeSparseRasterRGBA(40,60),
-                new TreeSparseRasterRGBA(40,60));
+                new TreeSparseRasterRGBA(40,60)
+        );
+
+        Scanner sc = new Scanner(System.in);
 
         // set default color.
         Color[] c = {Color.GREEN};
@@ -35,7 +39,8 @@ public class PhotoApp6 {
             "fill 10 11\n" +
             "crop 15 20\n";
 
-        Scanner sc = new Scanner(input);
+        sc = new Scanner(input);
+
 
         // set the filter kernel for all blurring operations in this app.
         double[][] filterKernel = new double[][]{
@@ -48,12 +53,13 @@ public class PhotoApp6 {
         // Java libraries implemented using a hash table, where keys are of type 'String' and
         // associated values of type 'UnsafeFactory'.
         HashMap<String, UnsafeFactory> commandMap = new HashMap<String, UnsafeFactory>();
-        commandMap.put("line", new UnsafeLineFactory(c));
+        // TODO: put key-value associations to 'commandMap': keys are command strings (like "line"
+        //  or "fill"), values are corresponding factories.
+        commandMap.put("newlayer", new UnsafeNewLayerFactory());
         commandMap.put("filter", new UnsafeConvolveFactory(filterKernel));
+        commandMap.put("line", new UnsafeLineFactory(c));
         commandMap.put("crop", new UnsafeCropFactory());
         commandMap.put("fill", new UnsafeFillFactory(c));
-        commandMap.put("brighten", new UnsafeBrightenFactory());
-        commandMap.put("newlayer", new UnsafeNewLayerFactory());
 
         while (sc.hasNext()) {
             String command = sc.next();
@@ -69,33 +75,19 @@ public class PhotoApp6 {
         }
 
         //TODO: finally visualize all layers separately.
-        int cellSize = 10;
-
-        for (RasterizedRGB layer : raster) {    // we can do that because we implemented Iterable
+        for (RasterizedRGB layer : raster) {
             CodeDraw cd = new CodeDraw(raster.getWidth() * cellSize, raster.getHeight() * cellSize);
             cd.clear(Color.BLACK);
+            // draw a square of size 'cellSize' for each pixel
             for (int j = 0; j < raster.getHeight(); j++) {
                 for (int i = 0; i < raster.getWidth(); i++) {
                     int x = i * cellSize;
                     int y = j * cellSize;
-                    cd.setColor(layer.getPixelColor(i, j));
+                    cd.setColor(raster.getPixelColor(i, j));
                     cd.fillSquare(x, y, cellSize);
                 }
             }
             cd.show();
         }
-
-        // Also visualize it alltogether.
-        CodeDraw cd = new CodeDraw(raster.getWidth() * cellSize, raster.getHeight() * cellSize);
-        cd.clear(Color.BLACK);
-        for (int j = 0; j < raster.getHeight(); j++) {
-            for (int i = 0; i < raster.getWidth(); i++) {
-                int x = i * cellSize;
-                int y = j * cellSize;
-                cd.setColor(raster.getPixelColor(i, j));
-                cd.fillSquare(x, y, cellSize);
-            }
-        }
-        cd.show();
     }
 }

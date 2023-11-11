@@ -5,26 +5,21 @@ import java.awt.*;
 //
 public class SimplePointColorMap {
 
-    private Point[] ks;
-    private Color[] vs;
-
-    private int lastIndex;
+    //TODO: declare variables.
+    private Point[] points;
+    private Color[] colors;
     private int size;
-
-    // We just use the .x component of the points
-    private final SimplePointQueue emptyIndices;
+    private int capacity;
 
     // Initializes this map with an initial capacity (length of internal array).
     // Precondition: initialCapacity > 0.
     public SimplePointColorMap(int initialCapacity) {
 
-        this.size = initialCapacity;
-
-        this.ks = new Point[initialCapacity];
-        this.vs = new Color[initialCapacity];
-
-        this.emptyIndices = new SimplePointQueue(initialCapacity);
-
+        //TODO: define constructor.
+        capacity = initialCapacity;
+        points = new Point[capacity];
+        colors = new Color[capacity];
+        size = 0;
     }
 
     // Adds a new key-value association to this map. If the key already exists in this map,
@@ -32,55 +27,35 @@ public class SimplePointColorMap {
     // Precondition: key != null && value != null.
     public Color put(Point key, Color value) {
 
-        int index = this.findKey(key);
-        if (index != -1) {
-            // Already exists
-            Color oldVal = this.vs[index];
-            this.vs[index] = value;
-
-            return oldVal;
-        }
-
-        // If key does not exist in the map
-        if (this.emptyIndices.size() > 0) {
-            // Set kv pair in the empty index position
-            Point indexpt = this.emptyIndices.poll();
-            index = indexpt.getX();
-
-            this.ks[index] = key;
-            this.vs[index] = value;
-
-            return null;
-        }
-        if (this.emptyIndices.size() == 0 & this.lastIndex == this.size) {
-            // Need to expand the keys and values lists
-            Point[] extendedKeys = new Point[2 * this.size];
-            Color[] extendedVals = new Color[2 * this.size];
-            System.arraycopy(this.ks, 0, extendedKeys, 0, this.ks.length);
-            System.arraycopy(this.vs, 0, extendedVals, 0, this.vs.length);
-            this.ks = extendedKeys;
-            this.vs = extendedVals;
-
-            this.size *= 2;
-        }
-
-        // Set kv pair in the lastIndex position
-        this.ks[this.lastIndex] = key;
-        this.vs[this.lastIndex] = value;
-        this.lastIndex += 1;
-
-        return null;
-    }
-
-    // Looks for a key in the key map. If exists, returns index of the key. Otherwise, returns -1
-    // Precondition: key != null.
-    private int findKey(Point key) {
-        for (int i = 0; i < this.lastIndex; ++i) {
-            if (this.ks[i] != null && this.ks[i].compareTo(key) == 0) {
-                return i;
+        //TODO: implement method.
+        Color oldValue = null;
+        int index = -1;
+        for (int i = 0; i < size; i++) {
+            if (points[i].compareTo(key) == 0) {
+                oldValue = colors[i];
+                index = i;
+                break;
             }
         }
-        return -1;
+        if (index == -1) {
+            if (size == capacity) {
+                capacity *= 2;
+                Point[] newPoints = new Point[capacity];
+                Color[] newColors = new Color[capacity];
+                for (int i = 0; i < size; i++) {
+                    newPoints[i] = points[i];
+                    newColors[i] = colors[i];
+                }
+                points = newPoints;
+                colors = newColors;
+            }
+            points[size] = key;
+            colors[size] = value;
+            size++;
+        } else {
+            colors[index] = value;
+        }
+        return oldValue;
     }
 
     // Returns the value associated with the specified key, i.e. the method returns the color
@@ -92,9 +67,13 @@ public class SimplePointColorMap {
     // Precondition: key != null.
     public Color get(Point key) {
 
-        int index = this.findKey(key);
-        return (index == -1) ? null : this.vs[index];
-
+        //TODO: implement method.
+        for (int i = 0; i < size; i++) {
+            if (points[i].compareTo(key) == 0) {
+                return colors[i];
+            }
+        }
+        return null;
     }
 
     // Removes the mapping for a key from this map if it is present. More formally, if this map
@@ -105,28 +84,34 @@ public class SimplePointColorMap {
     // Precondition: key != null.
     public Color remove(Point key) {
 
-        int index = this.findKey(key);
-        if (index == -1) {
-            return null;
+        //TODO: implement method.
+        Color oldValue = null;
+        int index = -1;
+        for (int i = 0; i < size; i++) {
+            if (points[i].compareTo(key) == 0) {
+                oldValue = colors[i];
+                index = i;
+                break;
+            }
         }
-        Color toReturn = this.vs[index];
-        this.ks[index] = null;
-        this.vs[index] = null;
-        this.emptyIndices.add(new Point(index, 0));
-
-        return toReturn;
+        if (index != -1) {
+            for (int i = index; i < size - 1; i++) {
+                points[i] = points[i + 1];
+                colors[i] = colors[i + 1];
+            }
+            size--;
+        }
+        return oldValue;
     }
 
     // Returns a queue with all keys of this map (ordering is not specified).
     public SimplePointQueue keys() {
 
-        SimplePointQueue queue = new SimplePointQueue(this.size);
-        for (int i = 0; i < this.lastIndex; ++i) {
-            if (this.ks[i] != null) {
-                queue.add(this.ks[i]);
-            }
+        //TODO: implement method.
+        SimplePointQueue queue = new SimplePointQueue(size);
+        for (int i = 0; i < size; i++) {
+            queue.add(points[i]);
         }
-
         return queue;
     }
 }

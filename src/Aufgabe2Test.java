@@ -4,6 +4,7 @@ public class Aufgabe2Test {
 
     public static void main(String[] args) {
 
+        // TODO: remove this line
 
         System.out.println("Test 'SimplePointQueue':");
         SimplePointQueue q = new SimplePointQueue(3);
@@ -36,11 +37,6 @@ public class Aufgabe2Test {
         testEquals(map.get(new Point(6, 4)), Color.BLUE);
         testEquals(map.keys().size(), 3);
 
-        // My tests
-        map.put(new Point(5, 4), Color.BLUE);
-        testEquals(map.get(new Point(5, 4)), Color.BLUE);
-        testEquals(map.keys().size(), 4);
-
         System.out.println("Test 'SimpleSparseRasterRGB':");
         SimpleSparseRasterRGB r1 = new SimpleSparseRasterRGB(40, 60);
         r1.drawLine(0, 1, 35, 9, new Color(20, 25, 250));
@@ -71,7 +67,7 @@ public class Aufgabe2Test {
         testEquals(r2.getPixelColor(3, 3), new Color(4, 208, 182));
         testEquals(r2.getPixelColor(10, 10), Color.BLACK);
 
-
+        // TODO: remove this line */
 
     }
 

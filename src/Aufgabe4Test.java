@@ -13,7 +13,7 @@ public class Aufgabe4Test {
 
         LinkedListRasterRGBA pl = new LinkedListRasterRGBA();
 
-        System.out.println("\nChecking basic functions of 'LinkedListRasterRGBA':");
+        System.out.println("Checking basic functions of 'LinkedListRasterRGBA':");
         System.out.println("Test1:");
         pl.addLast(r1);
         pl.addLast(r2);
@@ -68,7 +68,7 @@ public class Aufgabe4Test {
         testEquals(pl.set(2, r2), r5);
         testEquals(pl.get(2), r2);
 
-        System.out.println("\nChecking basic functions of 'LayeredRasterRGBA':");
+        System.out.println("Checking basic functions of 'LayeredRasterRGBA':");
         System.out.println("Test7:");
         LayeredRasterRGBA raster = new LayeredRasterRGBA(20,25);
         raster.drawLine(2,3,10,20, new Color(255, 0, 0, 255));
@@ -104,7 +104,7 @@ public class Aufgabe4Test {
         testEquals(raster.getPixelColor(13, 7), new Color(0, 0, 0, 255));
         testValue(raster.numberOfLayers(), 2);
 
-        System.out.println("\nChecking functions of 'TreeSetRasterRGBA':");
+        System.out.println("Checking functions of 'LayeredRasterRGBA':");
         System.out.println("Test14:");
         TreeSetRasterRGBA set = new TreeSetRasterRGBA();
         testTrue(set.add(r1));

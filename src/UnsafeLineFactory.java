@@ -5,7 +5,8 @@ import java.util.Scanner;
 //
 public class UnsafeLineFactory implements UnsafeFactory {
 
-    private Color color;
+    //TODO: declare variables.
+    private Color[] color;
 
     // Initializes 'this' with an array 'color'.
     // 'color' contains the default color as an array entry (color[0]). An array is
@@ -14,7 +15,8 @@ public class UnsafeLineFactory implements UnsafeFactory {
     // Precondition: color != null && color.length > 0.
     public UnsafeLineFactory(Color[] color) {
 
-        this.color = color[0];
+        //TODO: implement constructor.
+        this.color = color;
     }
 
     // Returns a new 'UnsafeLineOperation' object. The coordinates for the starting point and end
@@ -22,6 +24,7 @@ public class UnsafeLineFactory implements UnsafeFactory {
     @Override
     public UnsafeOperation create(Scanner sc) {
 
-        return new UnsafeLineOperation(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), color);
+        // TODO: implement method.
+        return new UnsafeLineOperation(sc.nextInt(), sc.nextInt(), sc.nextInt(), sc.nextInt(), color[0]);
     }
 }

@@ -44,6 +44,8 @@ public class PhotoApp3 {
 
                 raster = raster.convolve(filterKernel);
 
+                // */
+
             } else if (command.equals("crop")) {
 
                 // crop the raster to the rectangular region with upper left coordinates (0,0)
@@ -51,16 +53,25 @@ public class PhotoApp3 {
                 int width = sc.nextInt();
                 int height = sc.nextInt();
 
-                SimpleRasterRGB cropped = new SimpleRasterRGB(width, height);
-                for (int i = 0; i < width; i++) {
-                    for (int j = 0; j < height; j++) {
-                        cropped.setPixelColor(i, j, raster.getPixelColor(i, j));
+                // TODO: fill in missing code.
+                TreePointColorMap colorMap = new TreePointColorMap();
+                SimpleRasterRGB fullRaster = colorMap.asRasterRGB(width, height);
+                SimpleRasterRGB croppedRaster = new SimpleRasterRGB(width, height);
+                int xStart = (fullRaster.getWidth() - width) / 2;
+                int yStart = (fullRaster.getHeight() - height) / 2;
+                for (int x = 0; x < width; x++) {
+                    for (int y = 0; y < height; y++) {
+                        int fullX = xStart + x;
+                        int fullY = yStart + y;
+                        if (fullX >= 0 && fullX < fullRaster.getWidth() && fullY >= 0 && fullY < fullRaster.getHeight()) {
+                            croppedRaster.setPixelColor(x, y, fullRaster.getPixelColor(fullX, fullY));
+                        }
                     }
                 }
-                raster = cropped;
 
                 cd.close();
                 cd = new CodeDraw(raster.getWidth() * cellSize, raster.getHeight() * cellSize);
+
             } else if (command.equals("setcolor")) {
 
                 // set a new color for following drawing.

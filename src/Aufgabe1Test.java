@@ -6,6 +6,8 @@ public class Aufgabe1Test {
 
         //test classes 'SimpleRasterRGB' and 'SimpleDataBufferInt'
 
+        // TODO: remove this line
+
         SimpleRasterRGB r1 = new SimpleRasterRGB(40, 60);
         r1.drawLine(0, 1, 35, 9, new Color(20, 25, 250));
         r1.drawLine(30, 5, 0, 30, Color.ORANGE);
@@ -37,6 +39,8 @@ public class Aufgabe1Test {
         testEquals(r3.getPixelColor(25, 8), new Color(42, 34, 34));
         testEquals(r3.getPixelColor(33, 10), new Color(2, 3, 34));
         testEquals(r3.getPixelColor(5, 26), new Color(35, 78, 0));
+
+        // TODO: remove this line
 
     }
 

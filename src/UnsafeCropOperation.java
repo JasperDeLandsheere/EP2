@@ -1,7 +1,10 @@
+import java.awt.*;
+
 // This class represents a crop operation.
 //
 public class UnsafeCropOperation implements UnsafeOperation {
 
+    //TODO: declare variables.
     private int width;
     private int height;
 
@@ -11,6 +14,7 @@ public class UnsafeCropOperation implements UnsafeOperation {
     // Precondition: width >= 0 && height >= 0.
     public UnsafeCropOperation(int width, int height) {
 
+        // TODO: implement constructor.
         this.width = width;
         this.height = height;
     }
@@ -18,13 +22,15 @@ public class UnsafeCropOperation implements UnsafeOperation {
     // Returns the height of the crop region.
     public int getHeight() {
 
-        return height;
+        // TODO: implement method.
+        return this.height;
     }
 
     // Returns the width of the crop region.
     public int getWidth() {
 
-        return width;
+        // TODO: implement method.
+        return this.width;
     }
 
     @Override
@@ -35,6 +41,7 @@ public class UnsafeCropOperation implements UnsafeOperation {
     // this.getWidth() <= raster.getWidth() && this.getHeight() <= raster.getHeight().
     public RasterizedRGB execute(RasterizedRGB raster) {
 
+        // TODO: implement method.
         raster.crop(width, height);
         return raster;
     }

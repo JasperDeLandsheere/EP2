@@ -10,50 +10,59 @@ import java.awt.*;
 //
 public class HashSparseRasterRGB implements RasterizedRGB {
 
+    // TODO: declare variables.
+    private int width;
+    private int height;
+    private HashPointColorMap map;
+
     // Initialises this raster of the specified size as an empty
     // raster (all pixels being black, i.e. (R,G,B) = (0,0,0)).
     // Preconditions: height > 0, width > 0
-
-    private HashPointColorMap map = new HashPointColorMap();
-    private int width;
-    private int height;
-
     public HashSparseRasterRGB(int width, int height) {
 
+        // TODO: implement constructor.
         this.width = width;
         this.height = height;
-
+        map = new HashPointColorMap();
     }
 
     // Returns the color of the specified pixel.
     // Preconditions: (x,y) is a valid coordinate of the raster
     public Color getPixelColor(int x, int y) {
 
-        Color col = map.get(new Point(x,y));
-        return col == null ? Color.BLACK : col;
+        // TODO: implement method.
+        if (map.get(new Point(x, y)) == null) {
+            return Color.BLACK;
+        }
+        return map.get(new Point(x, y));
     }
 
     // Sets the color of the specified pixel. (If 'color' is 'Color.BLACK', the method
     // ensures that the pixel is not contained in the internal map.)
     // Preconditions: (x,y) is a valid coordinate of the raster, color != null
     public void setPixelColor(int x, int y, Color color) {
+
+        // TODO: implement method.
+        Point point = new Point(x, y);
         if (color.equals(Color.BLACK)) {
-            map.remove(new Point(x,y));
+            map.remove(point);
         } else {
-            map.put(new Point(x, y), color);
+            map.put(point, color);
         }
     }
 
     // Returns the width of this raster.
     public int getWidth() {
 
-        return width;
+        // TODO: implement method.
+        return this.width;
     }
 
     // Returns the height of this raster.
     public int getHeight() {
 
-        return height;
+        // TODO: implement method.
+        return this.height;
     }
 
     // Performs the convolution of 'this' with the specified filter kernel. 'this' is the result of
@@ -68,51 +77,41 @@ public class HashSparseRasterRGB implements RasterizedRGB {
     // filterKernel.length < this.getHeight().
     public void convolve(double[][] filterKernel) {
 
-        // queue of points to calculate the convolution to
-        SimplePointQueue toConvolveQueue = getPointsToConvolve(filterKernel);
-        // map to store the new colors
-        HashPointColorMap temp = new HashPointColorMap();
+        // TODO: implement method.
+        int filterSideLength = filterKernel.length / 2;
+        HashSparseRasterRGB result = new HashSparseRasterRGB(width, height);
+        SimplePointQueue queue = map.keys();
 
-        while (toConvolveQueue.size() > 0) {
-            double r = 0, g = 0, b = 0;
-            Point p = toConvolveQueue.poll();
-            for (int i = 0; i < filterKernel.length; i++) {
-                for (int j = 0; j < filterKernel.length; j++) {
-                    int x = p.getX() + i - filterKernel.length / 2;
-                    int y = p.getY() + j - filterKernel.length / 2;
-                    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
-                        Color c = this.getPixelColor(x, y);
-                        r += c.getRed() * filterKernel[i][j];
-                        g += c.getGreen() * filterKernel[i][j];
-                        b += c.getBlue() * filterKernel[i][j];
+        while (queue.size() > 0) {
+            Point p = queue.poll();
+            int x = p.getX();
+            int y = p.getY();
+            double[] temp_result = new double[3];
+
+            for (int xx1 = -filterSideLength; xx1 <= filterSideLength; xx1++) {
+                for (int yy1 = -filterSideLength; yy1 <= filterSideLength; yy1++) {
+                    int xi1 = x + xx1;
+                    int yj1 = y + yy1;
+                    for (int xx2 = -filterSideLength; xx2 <= filterSideLength; xx2++) {
+                        for (int yy2 = -filterSideLength; yy2 <= filterSideLength; yy2++) {
+                            int xi2 = xi1 + xx2;
+                            int yj2 = yj1 + yy2;
+                            if (xi2 >= 0 && xi2 < width && yj2 >= 0 && yj2 < height) {
+                                Color c2 = getPixelColor(xi2, yj2);
+                                temp_result[0] += c2.getRed() * filterKernel[xx2 + filterSideLength][yy2 + filterSideLength];
+                                temp_result[1] += c2.getGreen() * filterKernel[xx2 + filterSideLength][yy2 + filterSideLength];
+                                temp_result[2] += c2.getBlue() * filterKernel[xx2 + filterSideLength][yy2 + filterSideLength];
+                            }
+                        }
                     }
-                }
-            }
-            temp.put(p, new Color((int) r, (int) g, (int) b));
-        }
-
-        this.map = temp;
-    }
-
-    private SimplePointQueue getPointsToConvolve(double[][] filterKernel) {
-        int filterSize = filterKernel.length;
-        SimplePointQueue nonBlack = this.map.keys();
-        HashPointColorMap toConvolve = new HashPointColorMap();
-
-        // add neighboring points to a map according to filter size
-        while (nonBlack.size() > 0) {
-            Point p = nonBlack.poll();
-            for (int i = 0; i < filterSize; i++) {
-                for (int j = 0; j < filterSize; j++) {
-                    int x = p.getX() + i - filterSize / 2;
-                    int y = p.getY() + j - filterSize / 2;
-                    if (x >= 0 && x < width && y >= 0 && y < height) {
-                        toConvolve.put(new Point(x, y), Color.GREEN);
-                    }
+                    result.setPixelColor(xi1, yj1, new Color((int) temp_result[0], (int) temp_result[1], (int) temp_result[2]));
+                    temp_result[0] = 0;
+                    temp_result[1] = 0;
+                    temp_result[2] = 0;
                 }
             }
         }
-        return toConvolve.keys();
+        this.map = result.map;
     }
 
     // Crops 'this' to the rectangular region with upper left coordinates (0,0)
@@ -120,83 +119,16 @@ public class HashSparseRasterRGB implements RasterizedRGB {
     // Precondition: width <= this.getWidth() && height <= this.getHeight().
     public void crop(int width, int height) {
 
-        HashPointColorMap temp = new HashPointColorMap();
-        SimplePointQueue nonBlack = this.map.keys();
-
-        while (nonBlack.size() > 0) {
-            Point p = nonBlack.poll();
-            if (p.getX() < width && p.getY() < height) {
-                temp.put(p, this.getPixelColor(p.getX(), p.getY()));
+        // TODO: implement method.
+        HashSparseRasterRGB result = new HashSparseRasterRGB(width, height);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                result.setPixelColor(x, y, this.getPixelColor(x, y));
             }
         }
-
-        this.map = temp;
         this.width = width;
         this.height = height;
-    }
-
-    public void floodFill(Point p, Color c) {
-        SimplePointQueue q = new SimplePointQueue(1000);
-
-        Color originalColor = this.getPixelColor(p.getX(), p.getY());
-        q.add(p);
-
-        while (q.size() > 0) {
-            Point current = q.poll();
-            if (current.getX() < 0 || current.getX() >= this.getWidth()
-                    || current.getY() < 0 || current.getY() >= this.getHeight()) {
-                continue;
-            }
-            if (this.getPixelColor(current.getX(), current.getY()).equals(originalColor)) {
-                this.setPixelColor(current.getX(), current.getY(), c);
-                q.add(new Point(current.getX() + 1, current.getY()));
-                q.add(new Point(current.getX() - 1, current.getY()));
-                q.add(new Point(current.getX(), current.getY() + 1));
-                q.add(new Point(current.getX(), current.getY() - 1));
-            }
-        }
-    }
-
-    public void drawLine(Point p1, Point p2, Color color) {
-        int x1 = p1.getX();
-        int y1 = p1.getY();
-        int x2 = p2.getX();
-        int y2 = p2.getY();
-
-        int dx = Math.abs(x2 - x1);
-        int dy = Math.abs(y2 - y1);
-        int sx = x1 < x2 ? 1 : -1;
-        int sy = y1 < y2 ? 1 : -1;
-        int err = dx - dy;
-
-        while (x1 != x2 || y1 != y2) {
-            this.setPixelColor(x1, y1, color);
-
-            int err2 = 2 * err;
-            if (err2 > -dy) {
-                err -= dy;
-                x1 += sx;
-            }
-            if (err2 < dx) {
-                err += dx;
-                y1 += sy;
-            }
-        }
-    }
-
-    public void brighten(int N) {
-        SimplePointQueue toBrighten = this.map.keys();
-
-        while (toBrighten.size() > 0) {
-            Point p = toBrighten.poll();
-            Color tempCol = this.getPixelColor(p.getX(), p.getY());
-            for (int i = 0; i < N; ++i) {
-                tempCol = tempCol.brighter();
-            }
-            this.setPixelColor(p.getX(), p.getY(), tempCol);
-
-        }
-
+        this.map = result.map;
     }
 
     @Override

@@ -7,27 +7,20 @@ import java.awt.*;
 // multiple objects with the same key (for example, a subtree of a node can contain not only
 // smaller, but also equal keys). However, the tree does not contain the same object
 // multiple times (see the specification of the 'contains' method).
+//
+// TODO: define further classes and methods for the implementation of the binary search tree,
+//  if needed.
+//
 public class TreeSetRasterRGBA {
 
-    private final Node root;
-    private static class Node {
-        private final int key;
-        private RasterRGBA raster;
-        private Node left;
-        private Node right;
-
-        public Node(int key, RasterRGBA raster, Node left, Node right) {
-            this.key = key;
-            this.raster = raster;
-            this.left = left;
-            this.right = right;
-        }
-    }
+    //TODO: declare variables.
+    private TreeSetNode root;
 
     // Initialises 'this' as an empty set.
     public TreeSetRasterRGBA() {
-        root = new Node(0, null, null, null);
 
+        //TODO: implement constructor.
+        root = null;
     }
 
     // Ensures that the specified element is contained in this set. If the element already
@@ -36,40 +29,43 @@ public class TreeSetRasterRGBA {
     // Precondition: element != null.
     public boolean add(RasterRGBA element) {
 
-        if (root.raster == null) {
-            root.raster = element;
+        //TODO: implement method.
+
+        TreeSetNode newNode = new TreeSetNode(element.countPixels(new Color(0,0,0,0)), element);
+        if (root == null) {
+            root = newNode;
             return true;
         }
-        Node temp = root;
-        while (temp != null) {
-            if (element.countPixels(Color.BLACK) < temp.key) {
-                if (temp.left == null) {
-                    temp.left = new Node(element.countPixels(Color.BLACK), element, null, null);
+
+        TreeSetNode currNode = root;
+        while (true) {
+            int cmp = Integer.compare(newNode.key, currNode.key);
+            if (cmp < 0) {
+                if (currNode.left == null) {
+                    currNode.left = newNode;
                     return true;
                 } else {
-                    temp = temp.left;
+                    currNode = currNode.left;
                 }
-            } else if (element.countPixels(Color.BLACK) > temp.key) {
-                if (temp.right == null) {
-                    temp.right = new Node(element.countPixels(Color.BLACK), element, null, null);
+            } else if (cmp > 0) {
+                if (currNode.right == null) {
+                    currNode.right = newNode;
                     return true;
                 } else {
-                    temp = temp.right;
+                    currNode = currNode.right;
                 }
             } else {
-                if (temp.raster.equals(element)) {
+                // Same key, check if its value is equal to element
+                if (element.equals(currNode.value)) {
                     return false;
                 } else {
-                    if (temp.left == null) {
-                        temp.left = new Node(element.countPixels(Color.BLACK), element, null, null);
-                        return true;
-                    } else {
-                        temp = temp.left;
+                    TreeSetNode leftNode = currNode.left;
+                    currNode.left = newNode;
+                    newNode.left = leftNode;
+                    return true;
                     }
                 }
-            }
         }
-        return false;
     }
 
     // Returns true if this set contains the specified element, as determined by
@@ -78,21 +74,53 @@ public class TreeSetRasterRGBA {
     // Precondition: element != null.
     public boolean contains(RasterRGBA element) {
 
-        Node temp = root;
-        while (temp != null) {
-            if (element.countPixels(Color.BLACK) < temp.key) {
-                temp = temp.left;
-            } else if (element.countPixels(Color.BLACK) > temp.key) {
-                temp = temp.right;
+        //TODO: implement method.
+
+        TreeSetNode currNode = root;
+        while (currNode != null) {
+            int cmp = Integer.compare(element.countPixels(new Color(0,0,0,0)), currNode.key);
+            if (cmp < 0) {
+                currNode = currNode.left;
+            } else if (cmp > 0) {
+                currNode = currNode.right;
             } else {
-                if (temp.raster.equals(element)) {
-                    return true;
-                } else {
-                    temp = temp.left;
+                // Same key, traverse subtree to check for element
+                TreeSetNode subNode = currNode.left;
+                while (subNode != null) {
+                    if (element.equals(subNode.value)) {
+                        return true;
+                    } else {
+                        subNode = subNode.left;
+                    }
                 }
+                if (element.equals(currNode.value)) {
+                    return true;
+                }
+                subNode = currNode.right;
+                while (subNode != null) {
+                    if (element.equals(subNode.value)) {
+                        return true;
+                    } else {
+                        subNode = subNode.left;
+                    }
+                }
+                return false;
             }
         }
         return false;
     }
+
+}
+class TreeSetNode {
+    int key;
+    RasterRGBA value;
+    TreeSetNode left;
+    TreeSetNode right;
+
+    public TreeSetNode(int key, RasterRGBA value) {
+        this.key = key;
+        this.value = value;
+    }
 }
 
+// TODO: define further classes, if needed (either here or in a separate file).

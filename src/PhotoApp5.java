@@ -8,6 +8,7 @@ public class PhotoApp5 {
 
     public static void main(String[] args) {
 
+        //TODO: modify according to 'Aufgabenblatt5.md'.
         RasterizedRGB raster = new HashSparseRasterRGB(40, 60);
         int cellSize = 10;
         CodeDraw cd = new CodeDraw(raster.getWidth() * cellSize, raster.getHeight() * cellSize);
@@ -30,7 +31,7 @@ public class PhotoApp5 {
               "line 0 30 19 0\n" +
               "setcolor 255 255 255\n" +
               "fill 10 11\n" +
-              "crop 15 20\n" + "brighten 3\n";
+              "crop 15 20\n";
 
         sc = new Scanner(input);
 
@@ -45,11 +46,12 @@ public class PhotoApp5 {
         // Java libraries implemented using a hash table, where keys are of type 'String' and
         // associated values of type 'UnsafeFactory'.
         HashMap<String, UnsafeFactory> commandMap = new HashMap<String, UnsafeFactory>();
-        commandMap.put("line", new UnsafeLineFactory(c));
+        //TODO: put key-value associations to 'commandMap': keys are command strings (like "line"
+        //  or "fill"), values are corresponding factories.
         commandMap.put("filter", new UnsafeConvolveFactory(filterKernel));
+        commandMap.put("line", new UnsafeLineFactory(c));
         commandMap.put("crop", new UnsafeCropFactory());
         commandMap.put("fill", new UnsafeFillFactory(c));
-        commandMap.put("brighten", new UnsafeBrightenFactory());
 
         while (sc.hasNext()) {
             String command = sc.next();
@@ -57,13 +59,27 @@ public class PhotoApp5 {
             if(command.equals("setcolor")) {
                 // command that does not involve a raster
                 c[0] = new Color(sc.nextInt(), sc.nextInt(), sc.nextInt());
-                // update the default color
-                commandMap.put("line", new UnsafeLineFactory(c));
-                commandMap.put("fill", new UnsafeFillFactory(c));
             } else {
                 // commands with a corresponding factory object creating an operation on a raster.
+
+                //TODO: modify the following block according to 'Aufgabenblatt5.md':
+                //  use 'commandMap' to simplify.
                 commandMap.get(command).create(sc).execute(raster);
+
+                //  The following if-block can be replaced with just this single line:
+                //  commandMap.get(command).create(sc).execute(raster);
+
+                //if (command.equals("filter")) {
+                //    new UnsafeConvolveFactory(filterKernel).create(sc).execute(raster);
+                //} else if (command.equals("line")) {
+                //    new UnsafeLineFactory(c).create(sc).execute(raster);
+                //} else if (command.equals("crop")) {
+                //    new UnsafeCropFactory().create(sc).execute(raster);
+                //} else if (command.equals("fill")) {
+                //    new UnsafeFillFactory(c).create(sc).execute(raster);
+                //}
             }
+
         }
 
         cd.close();

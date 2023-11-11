@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.awt.*;
 // Represents a raster consisting of at least two layers.
 //
@@ -6,10 +7,10 @@ public class MultiLayerRasterRGBA implements Layered //TODO: activate clause.
 
     // TODO: define missing parts of this class.
     private SingleLayer foreground;
-    private Layered background;
+    private RasterizedRGB background;
+    private int size = 0;
     private int width;
     private int height;
-    private int nLayers = 0;
 
     // Initializes 'this' with top-layer 'foreground' and 'background'.
     // Performs dynamic type checking of 'background'. If 'background' is an instance of 'Layered'
@@ -23,66 +24,68 @@ public class MultiLayerRasterRGBA implements Layered //TODO: activate clause.
     public MultiLayerRasterRGBA(SingleLayer foreground, RasterizedRGB background) {
         this.width = foreground.getWidth();
         this.height = foreground.getHeight();
-
-        // TODO: dynamic type checking.
-        this.foreground = foreground;
-        if (background instanceof Layered) {
+        if(background instanceof Layered){
+            this.foreground = foreground;
             this.background = (Layered) background;
-            this.nLayers = 1 + this.background.numberOfLayers();
-        } else {
-            this.background = new TreeSparseRasterRGBA(width, height);
+
+            this.size = 1 + ((Layered) background).numberOfLayers();
+        }else{
+            this.foreground = foreground;
+            this.background = new TreeSparseRasterRGBA(foreground.getWidth(), foreground.getHeight());
             background.copyTo(this.background);
-            this.nLayers = 2;
+            this.size = 2;
         }
     }
 
     @Override
     public Layered newLayer() {
-        return new MultiLayerRasterRGBA(new TreeSparseRasterRGBA(width, height), this);
+
+        return new MultiLayerRasterRGBA(new TreeSparseRasterRGBA(this.foreground.getWidth(), this.foreground.getHeight()), this);
     }
 
     @Override
     public int numberOfLayers() {
-        return nLayers;
+        return this.size;
     }
 
     @Override
     public SingleLayer getForeground() {
-        return foreground;
+        return this.foreground;
     }
 
     @Override
     public Layered getBackground() {
-        return background;
+        return (Layered) this.background;
     }
 
     @Override
     public int getWidth() {
-        return width;
+        return this.width;
     }
 
     @Override
     public int getHeight() {
-        return height;
+        return this.height;
     }
 
     @Override
     public Color getPixelColor(int x, int y) {
-        Color color = foreground.getPixelColor(x, y);
-        if (background != null) {
-            color = RasterRGBA.over(color, background.getPixelColor(x, y));
+        Color color = this.foreground.getPixelColor(x, y);
+        if (background != null){
+            color = RasterRGBA.over(color, this.background.getPixelColor(x, y));
         }
         return color;
     }
 
     @Override
     public void setPixelColor(int x, int y, Color color) {
-        foreground.setPixelColor(x, y, color);
+        this.foreground.setPixelColor(x, y, color);
     }
 
     @Override
     public void convolve(double[][] filterKernel) {
-        foreground.convolve(filterKernel);
+        this.foreground.convolve(filterKernel);
+
     }
 
     @Override
@@ -90,68 +93,32 @@ public class MultiLayerRasterRGBA implements Layered //TODO: activate clause.
         this.width = width;
         this.height = height;
     }
-
-    @Override
-    public void floodFill(Point p, Color color) {
-        SimplePointQueue q = new SimplePointQueue(1000);
-
-        Color originalColor = this.getPixelColor(p.getX(), p.getY());
-        q.add(p);
-
-        while (q.size() > 0) {
-            Point current = q.poll();
-            if (current.getX() < 0 || current.getX() >= this.getWidth()
-                    || current.getY() < 0 || current.getY() >= this.getHeight()) {
-                continue;
-            }
-            if (this.getPixelColor(current.getX(), current.getY()).equals(originalColor)) {
-                this.setPixelColor(current.getX(), current.getY(), color);
-                q.add(new Point(current.getX() + 1, current.getY()));
-                q.add(new Point(current.getX() - 1, current.getY()));
-                q.add(new Point(current.getX(), current.getY() + 1));
-                q.add(new Point(current.getX(), current.getY() - 1));
-            }
-        }
-
-    }
-
-    @Override
-    public void drawLine(Point p1, Point p2, Color color) {
-        int x1 = p1.getX();
-        int y1 = p1.getY();
-        int x2 = p2.getX();
-        int y2 = p2.getY();
-
-        int dx = Math.abs(x2 - x1);
-        int dy = Math.abs(y2 - y1);
-        int sx = x1 < x2 ? 1 : -1;
-        int sy = y1 < y2 ? 1 : -1;
-        int err = dx - dy;
-
-        while (x1 != x2 || y1 != y2) {
-            this.setPixelColor(x1, y1, color);
-
-            int err2 = 2 * err;
-            if (err2 > -dy) {
-                err -= dy;
-                x1 += sx;
-            }
-            if (err2 < dx) {
-                err += dx;
-                y1 += sy;
-            }
-        }
-    }
-
-    @Override
-    public void brighten(int N) {
-
-    }
-
+    //The iterator should iterate over all levels of the grid, starting with the
+    //top level. Each iteration returns the next level down, down to the bottom
+    //Level. If there is no further level, the next iteration returns 'null'.
     @Override
     public RasterizedRGBIterator iterator() {
+        return new rasterIterator(this);
+    }
 
-        return new MLRIt(this);
+    // Returns an iterator that iterates over the layers of this raster in a bottom-to-top order.
+    // (The first iteration returns the bottom-most layer.)
+    public RasterizedRGBIterator reversedIterator() {
+
+        // TODO: implement method.
+        return new ReversedRasterIterator(this);
+    }
+
+    // Returns a new list with all the layers of this raster in top-to-bottom order. The size of the
+    // list equals the value returned by 'numberOfLayers()'.
+    public java.util.ArrayList<RasterizedRGB> asList() {
+
+        // TODO: implement method.
+        java.util.ArrayList<RasterizedRGB> list = new java.util.ArrayList<>();
+        RasterizedRGBIterator it = this.iterator();
+        while(it.hasNext()){
+            list.add(it.next());
+        }
+        return list;
     }
 }
-
